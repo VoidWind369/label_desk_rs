@@ -1,0 +1,99 @@
+import { Button, VerticalBox , CheckBox} from "std-widgets.slint";
+import { ColorInput , ColorLableText, ColorButton, ColorCheckBox} from "component/style.slint";
+
+export component App inherits Window {
+    preferred-width: 500px;
+    height: 220px;
+    icon: @image-url("../logo-icon.png");
+    title: "标签比输赢";
+    in-out property<int> counter: 0;
+    in-out property<string> label_check_our: lay-our.text;
+    in-out property<string> label_check_you: lay-you.text;
+    in-out property<string> label_check_text: "比大";
+    in-out property<bool> label_check_bool: true;
+    in-out property<string> label_check_value;
+
+    in-out property<int> label_check_color;
+    in-out property<color> label_check_color_value;
+
+    callback request-increase-value();
+    callback label_check();
+    callback label_res();
+    label_check => {
+        label_check_text = label_check_button.text == "比大" ? "比小":"比大";
+        label_check_bool = label_check_button.text == "比大";
+    }
+    lay_our:= HorizontalLayout {
+        padding: 10px;
+        in-out property <string> text: label-our.text;
+        ColorLableText {
+            text: "本方标签";
+        }
+        label_our:= ColorInput {
+            width: 300px;
+        }
+    }
+    lay_you:= HorizontalLayout {
+        y: 50px;
+        padding: 10px;
+        in-out property <string> text: label-you.text;
+        ColorLableText {
+            text: "对方标签";
+        }
+        label_you:= ColorInput {
+            width: 300px;
+        }
+    }
+    HorizontalLayout {
+        y: 100px;
+        padding: 10px;
+        ColorLableText {
+            text: "点了\{root.counter}下";
+            font-color: gray;
+        }
+        label_check_button:= ColorButton {
+            width: 60px;
+            text: root.label-check-text;
+            clicked => {
+                label-check()
+            }
+        }
+    }
+    HorizontalLayout {
+        x: 290px;
+        y: 100px;
+        padding: 10px;
+        ColorButton {
+            width: 100px;
+            text: "提交";
+            clicked => {
+                root.label-res();
+                root.request-increase-value();
+            }
+        }
+    }
+    lay_value:= HorizontalLayout {
+        y: 150px;
+        padding: 10px;
+        // in-out property <string> text: label-value.text;
+        in property <color> color;
+        if root.label-check-color == 1 : Text {
+            text: root.label-check-value;
+            color: green;
+            font-size: 20px;
+        } 
+        if root.label-check-color == 2 : Text {
+            text: root.label-check-value;
+            color: red;
+            font-size: 20px;
+        }
+        if root.label-check-color == 3 : Text {
+            text: root.label-check-value;
+            color: orange;
+            font-size: 20px;
+        }
+        // label_value:= Text {
+        //     text: root.label-check-value;
+        // }
+    }
+}

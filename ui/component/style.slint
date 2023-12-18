@@ -1,0 +1,42 @@
+import { Button, VerticalBox , CheckBox} from "std-widgets.slint";
+
+export component ColorInput inherits Rectangle {
+    background: white;
+    border-color: #ddd;
+    border-radius: 5px;
+    border-width: 2px;
+    height: 32px;
+    in-out property <string> text: body.text;
+    in-out property <InputType> input-type: body.input-type;
+    body:= TextInput {
+        x: 6px;
+        y: 7px;
+        width: parent.width - 7px;
+        font-size: 16px;
+        selection-background-color: black;
+        selection-foreground-color: white;
+    }
+}
+
+export component ColorLableText inherits Rectangle {
+    width: 90px;
+    height: 32px;
+    in-out property <string> text;
+    in-out property <color> font-color: black;
+    body:= Text {
+        y: 7px;
+        width: parent.width;
+        font-size: 14px;
+        text: parent.text;
+        color: parent.font-color;
+    }
+}
+
+export component ColorButton inherits Button {
+    height: 32px;
+}
+
+export component ColorCheckBox inherits CheckBox {
+    height: 32px;
+    y: 0;
+}
