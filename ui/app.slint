@@ -1,11 +1,14 @@
-import { Button, VerticalBox , CheckBox} from "std-widgets.slint";
-import { ColorInput , ColorLableText, ColorButton, ColorCheckBox} from "component/style.slint";
+import { ColorInput , ColorLableText, ColorCheckBox, ColorButtonGold, ColorButtonOutWheat, ColorCloseButton, Logo, ColorLineEdit} from "component/style.slint";
 
 export component App inherits Window {
-    preferred-width: 500px;
-    height: 220px;
-    icon: @image-url("../logo-icon.png");
+    in-out property <length> window_hight: 194px;
+    width: 410px;
+    height: self.window_hight;
+    icon: @image-url("z_logo.png");
     title: "标签比输赢";
+    background: #00000000;
+    no-frame: true;
+    default-font-size: 14px;
     in-out property<int> counter: 0;
     in-out property<string> label_check_our: lay-our.text;
     in-out property<string> label_check_you: lay-you.text;
@@ -16,84 +19,167 @@ export component App inherits Window {
     in-out property<int> label_check_color;
     in-out property<color> label_check_color_value;
 
+    callback close_window();
+    // 是否按下了鼠标
+    property <bool> drag-area-pressed: false;
+    // 记录按下的位置
+    property <length> drag-area-down-x: 0;
+    property <length> drag-area-down-y: 0;
+    callback move-window(length, length);
+
     callback request-increase-value();
     callback label_check();
     callback label_res();
+
+    animate height {
+        duration: 150ms;
+        easing: ease;
+    }
+
     label_check => {
         label_check_text = label_check_button.text == "比大" ? "比小":"比大";
         label_check_bool = label_check_button.text == "比大";
     }
-    lay_our:= HorizontalLayout {
-        padding: 10px;
-        in-out property <string> text: label-our.text;
-        ColorLableText {
-            text: "本方标签";
+    Rectangle {
+        width: root.width;
+        height: root.height;
+        border-radius: 10px;
+        border-color: wheat;
+        border-width: 1.2px;
+        background: @linear-gradient(0deg, #1d1d1d 0%, #202020 100%);
+        desk:= HorizontalLayout {
+            x: 0;
+            y: 0;
+            height: 30px;
+            Rectangle {
+                in-out property <duration> speed: 120ms;
+                border-radius: 10px;
+                width: root.width;
+                height: parent.height;
+                area:= TouchArea {
+                    width: parent.width;
+                    height: parent.height;
+                    moved => {
+                        //根据移动的偏移量，设置窗口位置
+                        move-window(self.mouse-x - drag-area-down-x, self.mouse-y - drag-area-down-y);
+                    }
+                    pointer-event(ev) => {
+                        drag-area-pressed = ev.kind == PointerEventKind.down;
+                        drag-area-down-x = self.mouse-x;
+                        drag-area-down-y = self.mouse-y;
+                    }
+                }
+                Logo {
+                    text: "Z";
+                    x: 10px;
+                    y: -1px;
+                    font-size: 30px;
+                    color: area.has-hover ? @linear-gradient(0deg, beige 0%, wheat 100%) : wheat;
+                    animate color {
+                        duration: parent.speed;
+                    }
+                }
+                ColorLableText {
+                    x: 40px;
+                    y: 2px;
+                    text: "比标签";
+                    vertical-alignment: center;
+                    font-color: area.has-hover ? @linear-gradient(0deg, beige 0%, wheat 100%) : wheat;
+                    animate font-color {
+                        duration: parent.speed;
+                    }
+                }
+                ColorCloseButton {
+                    x: 378px;
+                    y: 5px;
+                    clicked => {
+                        close-window()
+                    }
+                }
+            }
         }
-        label_our:= ColorInput {
-            width: 300px;
+        lay_our:= HorizontalLayout {
+            y: 40px;
+            padding: 10px;
+            in-out property <string> text: label-our.text;
+            ColorLableText {
+                text: "本方标签";
+                font-color: white;
+            }
+            label_our:= ColorLineEdit {
+                width: 310px;
+            }
         }
-    }
-    lay_you:= HorizontalLayout {
-        y: 50px;
-        padding: 10px;
-        in-out property <string> text: label-you.text;
-        ColorLableText {
-            text: "对方标签";
+        lay_you:= HorizontalLayout {
+            y: 90px;
+            padding: 10px;
+            in-out property <string> text: label-you.text;
+            ColorLableText {
+                text: "对方标签";
+                font-color: white;
+            }
+            label_you:= ColorLineEdit {
+                width: 310px;
+            }
         }
-        label_you:= ColorInput {
-            width: 300px;
+        HorizontalLayout {
+            y: 140px;
+            padding: 10px;
+            ColorLableText {
+                text: "点了\{root.counter}下";
+                font-color: gray;
+            }
+            label_check_button:= ColorButtonOutWheat {
+                width: 60px;
+                text: root.label-check-text;
+                clicked => {
+                    label-check()
+                }
+            }
         }
-    }
-    HorizontalLayout {
-        y: 100px;
-        padding: 10px;
-        ColorLableText {
-            text: "点了\{root.counter}下";
-            font-color: gray;
+        HorizontalLayout {
+            x: 290px;
+            y: 140px;
+            padding: 10px;
+            ColorButtonGold {
+                width: 100px;
+                text: "提交";
+                clicked => {
+                    root.label-res();
+                    root.request-increase-value();
+                }
+            }
         }
-        label_check_button:= ColorButton {
-            width: 60px;
-            text: root.label-check-text;
-            clicked => {
-                label-check()
+        Rectangle {
+            y: 195px;
+            width: 360px;
+            height: 1px;
+            background: @linear-gradient(90deg, #20202080 0%, #8d8d8dcc 50%, #20202080 100%);
+        }
+        lay_value:= HorizontalLayout {
+            y: 200px;
+            padding: 10px;
+            // in property <color> color;
+            // in-out property <string> text: label-value.text;
+            if root.label-check-color == 1 : Text {
+                text: root.label-check-value;
+                color: green;
+                font-size: 20px;
+                horizontal-alignment: center;
+            } 
+            if root.label-check-color == 2 : Text {
+                text: root.label-check-value;
+                color: red;
+                font-size: 20px;
+                horizontal-alignment: center;
+            }
+            if root.label-check-color == 3 : Text {
+                text: root.label-check-value;
+                color: orange;
+                font-size: 20px;
+                horizontal-alignment: center;
             }
         }
     }
-    HorizontalLayout {
-        x: 290px;
-        y: 100px;
-        padding: 10px;
-        ColorButton {
-            width: 100px;
-            text: "提交";
-            clicked => {
-                root.label-res();
-                root.request-increase-value();
-            }
-        }
-    }
-    lay_value:= HorizontalLayout {
-        y: 150px;
-        padding: 10px;
-        // in-out property <string> text: label-value.text;
-        in property <color> color;
-        if root.label-check-color == 1 : Text {
-            text: root.label-check-value;
-            color: green;
-            font-size: 20px;
-        } 
-        if root.label-check-color == 2 : Text {
-            text: root.label-check-value;
-            color: red;
-            font-size: 20px;
-        }
-        if root.label-check-color == 3 : Text {
-            text: root.label-check-value;
-            color: orange;
-            font-size: 20px;
-        }
-        // label_value:= Text {
-        //     text: root.label-check-value;
-        // }
-    }
+    
 }

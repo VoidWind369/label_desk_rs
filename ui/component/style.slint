@@ -1,4 +1,4 @@
-import { Button, VerticalBox , CheckBox} from "std-widgets.slint";
+import { Button, VerticalBox , CheckBox, TabWidgetImpl, LineEdit} from "std-widgets.slint";
 
 export component ColorInput inherits Rectangle {
     background: white;
@@ -18,22 +18,173 @@ export component ColorInput inherits Rectangle {
     }
 }
 
+export component ColorViewInput inherits Rectangle {
+    background: gray;
+    border-color: #ddd;
+    border-radius: 5px;
+    border-width: 2px;
+    height: 32px;
+    in-out property <string> text;
+    body:= Text {
+        x: 6px;
+        y: 7px;
+        width: parent.width - 7px;
+        font-size: 14px;
+        text: parent.text;
+    }
+}
+
+export component ColorLineEdit inherits Rectangle {
+    border-color: wheat;
+    border-radius: 5px;
+    border-width: 2px;
+    height: 32px;
+    in-out property <string> text: body.text;
+    in-out property <InputType> input-type: body.input-type;
+    in-out property <bool> read-only;
+    body:= LineEdit {
+        width: parent.width;
+        font-size: 16px;
+        read-only: parent.read-only;
+    }
+}
+
 export component ColorLableText inherits Rectangle {
-    width: 90px;
+    width: 80px;
     height: 32px;
     in-out property <string> text;
     in-out property <color> font-color: black;
+    in-out property <TextHorizontalAlignment> horizontal-alignment;
+    in-out property <TextVerticalAlignment> vertical-alignment;
+    in-out property <length> font-size: body.font-size;
     body:= Text {
         y: 7px;
         width: parent.width;
         font-size: 14px;
         text: parent.text;
         color: parent.font-color;
+        horizontal-alignment: parent.horizontal-alignment;
+        vertical-alignment: parent.vertical-alignment;
     }
 }
 
-export component ColorButton inherits Button {
+export component ColorButtonGold inherits Rectangle {
+    in-out property <string> text;
+    in-out property <duration> speed: 100ms;
     height: 32px;
+    background: area.has-hover ? @linear-gradient(0deg, beige 0%, white 100%) : @linear-gradient(0deg, beige 0%, wheat 100%);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: white;
+    callback clicked <=> area.clicked;
+    area:= TouchArea {
+        width: parent.width;
+        height: parent.height;
+    }
+    body:= Text {
+        text: parent.text;
+        font-size: 14px;
+        color: #302d00;
+    }
+//    states [
+//        active-hover when area.has-hover && !area.pressed: {
+//            root.background: @linear-gradient(0deg, beige 0%, white 100%);
+//        }
+//        active-click when !area.has-hover && area.pressed: {
+//            root.background: @linear-gradient(0deg, beige 0%, wheat 100%);
+//        }
+//    ]
+    animate background {
+        duration: root.speed;
+    }
+}
+
+export component ColorButtonOutWheat inherits Rectangle {
+    in-out property <string> text;
+    in-out property <duration> speed: 100ms;
+    in-out property <color> font-color: area.has-hover ? #302d00 : wheat;
+    height: 32px;
+    background: area.has-hover ? wheat : #00000000;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: wheat;
+    callback clicked <=> area.clicked;
+    area:= TouchArea {
+        width: parent.width;
+        height: parent.height;
+            
+    }
+    body:= Text {
+        text: parent.text;
+        font-size: 14px;
+        color: parent.font-color;
+    }
+//    states [
+//        active-hover when area.has-hover && !area.pressed: {
+//            root.background: wheat;
+//            root.font-color: #302d00;
+//        }
+//        active-click when !area.has-hover && area.pressed: {
+//            root.background: #00000000;
+//            root.font-color: wheat;
+//        }
+//    ]
+    animate background {
+        duration: root.speed;
+    }
+    animate font-color {
+        duration: root.speed;
+    }
+}
+
+export component ColorCloseButton inherits Rectangle {
+//    in-out property <color> font-color: area.has-hover ? #302d00 : wheat;
+    in-out property <duration> speed: 100ms;
+    in-out property <color> font-color: wheat;
+    width: 24px;
+    height: 24px;
+//    background: area.has-hover ? wheat : #00000000;
+    border-radius: 12px;
+    border-width: 1.2px;
+    border-color: area.pressed ? wheat : #00000000;
+    callback clicked <=> area.clicked;
+    area:= TouchArea {
+        width: parent.width;
+        height: parent.height;
+    }
+    body:= Text {
+        text: "X";
+        font-size: 16px;
+        color: parent.font-color;
+        font-weight: 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    states [
+        active-hover when area.has-hover && !area.pressed: {
+            root.background: wheat;
+            root.font-color: #302d00;
+            border-color: #00000000;
+        }
+        active-click when !area.has-hover && area.pressed: {
+            root.font-color: wheat;
+            border-color: wheat;
+        }
+    ]
+    animate border-color {
+        duration: root.speed;
+    }
+    animate background {
+        duration: root.speed;
+    }
+    animate font-color {
+        duration: root.speed;
+    }
+}
+
+export component Logo inherits Text {
+    color: wheat;
+    font-weight: 900;
 }
 
 export component ColorCheckBox inherits CheckBox {

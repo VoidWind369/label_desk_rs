@@ -11,3 +11,4 @@ slint = "*"
 
 [build-dependencies]
 slint-build = "*"
+embed-resource = "*"
